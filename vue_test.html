@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vuetest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- <div id="el">{{ message }}</div> -->
+    <div id="app">
+        <!-- <input v-model="text.a" type="text"><br /> -->
+        <!-- {{ count + 1 }} -->
+        <!-- <testb :name="text" /> -->
+        <!-- <my-test @test="this.alert(1)" @click="this.alert(1)"></my-test> -->
+        <!-- <p @click.ctrl="test"></p> -->
+        <div ref="messageDiv">{{ message }}</div>
+        <div>这里是没用nextTick获得的信息： {{ messageOne }}</div>
+        <div>这里是用nextTick获得的信息： {{ messageTwo }}</div>
+        <button @click="changeMsg">改变信息</button>
+    </div>
+
+    <script src="./vue/dist/vue.js"></script>
+    <script>
+       var myVueApp = new Vue({
+           data() {
+               return {
+                message: '测试信息',
+                messageOne: '',
+                messageTwo: '',
+                   count: 1,
+               }
+           },
+           watch: {
+               'text': {
+                   deep: false,
+                   handler(val){
+                        console.log(val, 'watch')
+                }
+               }
+           },
+           computed: {
+               myText() {
+                   console.log('111')
+                   return this.text;
+               }
+           },
+           components: {
+               'testb': {
+                   props: ['name'],
+                   mounted() {
+                    //    this.name.a = '456';
+                    this.$emit('cb', '666cb')
+                    this.$on('cb', e => {
+                        console.log("oncb", e)
+                    })
+                   },
+                   template: '<div>{{ name }}</div>'
+               }
+           },
+           created() {
+           },
+           mounted() {
+               console.log(this.myText)
+           },
+           methods: {
+            changeMsg() {
+                this.message = '改变了的信息';
+                this.messageOne = this.$refs.messageDiv.innerHTML;
+                console.log(this.message, this.messageOne)
+                this.$nextTick(() => {
+                    this.messageTwo = this.$refs.messageDiv.innerHTML;
+                })
+            },
+               handleCb(e) {
+                   console.log('handle', e)
+               },
+               test() {
+                   console.log('test123', this.myText)
+               }
+           },
+           el: '#app',
+       });
+
+    //    const vm = new Vue({
+    //     el: '#el',
+    //     data: {
+    //         message: '123'
+    //     }
+    //     })
+    //     vm.message = 'nihao';
+    //     vm.$el.textContent === 'nihao';
+    //     console.log(':::', vm.message, vm.$el.textContent, vm.$el.textContent === 'nihao')
+    //     vm.$nextTick(() => {
+    //         console.log(':::', vm.$el.textContent, vm.$el.textContent === 'nihao')
+    //     })
+        console.time()
+    // const worker = new Worker('worker.js')
+    // worker.postMessage(40)
+    // worker.onmessage = function(e) {
+    //     const data = e.data;
+    //     console.log("data", e)
+    //     console.timeEnd()
+    // }
+    // worker.onerror=function(event){
+    //     console.log(event.fileName,event.lineo,event.message);
+    // };
+    </script>
+</body>
+</html>

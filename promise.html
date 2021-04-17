@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vuetest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <script>
+    // var p1 = Promise.resolve(3).catch(function(err) {
+    //   return err;
+    // });
+    // var p2 = Promise.reject(2).catch(function(err) {
+    //   console.log('err', err)
+    // });
+    // var p3 = new Promise((resolve, reject) => {
+    //   setTimeout(resolve, 100, "foo");
+    // }).catch(function(err) {
+    //   return err;
+    // });
+
+    // Promise.all([p1, p2, p3]).then(values => {
+    //   console.log(values); // [3, 2, "foo"]
+    // }).catch(function(err) {
+    //   console.log(1); //不会走到这里
+    // })
+    var p1 = Promise.resolve(3);
+    var p2 = Promise.reject(2);
+    var p3 = new Promise((resolve, reject) => {
+      setTimeout(resolve, 100, "foo");
+    });
+    // Promise.allSettled([p1, p2, p3]).then((res) => {
+    //   console.log('res:: ', res);
+    // }, (e) => {
+    //   console.log('err:: ', e)
+    // })
+
+    function aa(promises, max = 2, res = []) {
+      Promise.allSettled(promises).then((r) => {
+        let rejectedPromise = [];
+        let rejectedRes = [];
+        r.forEach((rs, i) => {
+          if (rs.status === 'fulfilled') {
+            res.push(rs)
+          } else {
+            rejectedPromise.push(promises[i])
+            rejectedRes.push(rs)
+          }
+        })
+
+        if (rejectedPromise.length) {
+          max--;
+          if (max <= 0) {
+            res = res.concat(rejectedRes)
+            return res;
+          }
+          aa(rejectedPromise, max, res)
+        }
+      })
+      return res;
+    }
+    const res = aa([p1, p2, p3])
+    console.log(res)
+    </script>
+</body>
+</html>
